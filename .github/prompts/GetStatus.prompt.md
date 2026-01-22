@@ -1,4 +1,3 @@
-```prompt
 ---
 agent: agent
 ---
@@ -164,4 +163,3 @@ When presenting status to user:
 2. **Highlight next action** - Clear command to run
 3. **Show any blockers** - Issues that need resolution
 4. **Link to detailed reports** - For more information
-```

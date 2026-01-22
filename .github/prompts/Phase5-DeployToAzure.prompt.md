@@ -1,7 +1,7 @@
 ---
 agent: agent
 model: Claude Sonnet 4.5 (copilot)
-tools: ['search/codebase', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'runCommands/terminalSelection', 'runCommands/terminalLastCommand', 'openSimpleBrowser', 'fetch', 'search/searchResults', 'githubRepo', 'extensions', 'runTests', 'edit/editFiles', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'Azure MCP/*', 'Microsoft Docs/*']
+tools: ['vscode/openSimpleBrowser', 'vscode/vscodeAPI', 'vscode/extensions', 'execute/testFailure', 'execute/runTask', 'execute/runInTerminal', 'execute/runTests', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/editFiles', 'search', 'web', 'azure-mcp/documentation', 'azure-mcp/search']
 ---
 Deploy application to Azure, using Azure Developer CLI (azd) for streamlined deployment. 
 

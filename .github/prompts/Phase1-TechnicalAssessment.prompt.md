@@ -1,8 +1,7 @@
-```prompt
 ---
 agent: agent
 model: Claude Sonnet 4.5 (copilot)
-tools: ['search/codebase', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'runCommands/terminalSelection', 'runCommands/terminalLastCommand', 'openSimpleBrowser', 'fetch', 'search/searchResults', 'githubRepo', 'extensions', 'runTests', 'edit/editFiles', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'Azure MCP/*', 'Microsoft Docs/*']
+tools: ['vscode/openSimpleBrowser', 'vscode/vscodeAPI', 'vscode/extensions', 'execute/testFailure', 'execute/runTask', 'execute/runInTerminal', 'execute/runTests', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/editFiles', 'search', 'web', 'azure-mcp/documentation', 'azure-mcp/search']
 ---
 
 # Phase 1: Technical Assessment & Migration Preferences
@@ -393,4 +392,3 @@ At the end of Phase 1, you should have:
 6. ✅ `reports/Report-Status.md` updated
 
 **Next Step**: `/phase2-createmigrationplan` to create detailed file-by-file migration plan.
-```

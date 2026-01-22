@@ -1,8 +1,7 @@
-```prompt
 ---
 agent: agent
 model: Claude Sonnet 4.5 (copilot)
-tools: ['search/codebase', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'runCommands/terminalSelection', 'runCommands/terminalLastCommand', 'openSimpleBrowser', 'fetch', 'search/searchResults', 'githubRepo', 'extensions', 'runTests', 'edit/editFiles', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'Azure MCP/*', 'Microsoft Docs/*']
+tools: ['vscode/openSimpleBrowser', 'vscode/vscodeAPI', 'vscode/extensions', 'execute/testFailure', 'execute/runTask', 'execute/runInTerminal', 'execute/runTests', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/editFiles', 'search', 'web', 'azure-mcp/documentation', 'azure-mcp/search']
 ---
 
 # Phase 0: PHP Application Discovery & Understanding
@@ -495,4 +494,3 @@ At the end of Phase 0, you should have:
 6. ✅ Database schema documented
 
 **Next Step**: Proceed to `/phase1-technicalassessment` to gather user preferences and create the technical assessment.
-```
