@@ -1,0 +1,93 @@
+﻿@model Bookstore.Web.Models.ViewModels.BookCatalogViewModel
+@{
+    ViewData["Title"] = "Book Catalog";
+}
+
+<div class="row">
+    <div class="col-md-9">
+        <h2>Book Catalog</h2>
+        <div class="row">
+            @foreach (var book in Model.Books)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="@book.ImagePath" class="card-img-top" alt="@book.Title" />
+                        <div class="card-body">
+                            <h5 class="card-title">@book.Title</h5>
+                            <p class="card-text">
+                                <strong>ISBN:</strong> @book.ISBN<br />
+                                <strong>Author:</strong> @book.Author<br />
+                                <strong>Type:</strong> @book.Type<br />
+                                <strong class="text-success">RM @book.Price.ToString("N2")</strong>
+                            </p>
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <form asp-controller="Home" asp-action="AddToCart" method="post">
+                                    <input type="hidden" name="BookId" value="@book.BookId" />
+                                    <div class="input-group mb-2">
+                                        <input type="number" name="Quantity" value="1" min="1" max="999" class="form-control" style="max-width: 80px;" />
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </div>
+                                    @Html.AntiForgeryToken()
+                                </form>
+                            }
+                            else
+                            {
+                                <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn" class="btn btn-secondary">
+                                    Login to Purchase
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="col-md-3">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-shopping-cart"></i> Cart</span>
+                    @if (Model.CartItems.Any())
+                    {
+                        <form asp-controller="Cart" asp-action="EmptyCart" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-light" onclick="return confirm('Empty cart?');">
+                                Empty
+                            </button>
+                        </form>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (Model.CartItems.Any())
+                    {
+                        @foreach (var item in Model.CartItems)
+                        {
+                            <div class="mb-3 border-bottom pb-2">
+                                <img src="@item.ImagePath" alt="@item.BookTitle" class="img-thumbnail" style="width: 60px;" />
+                                <p class="mb-1"><strong>@item.BookTitle</strong></p>
+                                <p class="mb-1 small">RM @item.Price.ToString("N2")</p>
+                                <p class="mb-1 small">Quantity: @item.Quantity</p>
+                                <p class="mb-0"><strong>Total: RM @item.TotalPrice.ToString("N2")</strong></p>
+                            </div>
+                        }
+                        <div class="border-top pt-2">
+                            <p class="mb-2"><strong>Total: RM @Model.CartTotal.ToString("N2")</strong></p>
+                            <a asp-controller="Order" asp-action="Checkout" class="btn btn-success w-100">
+                                <i class="fas fa-credit-card"></i> CHECKOUT
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Your cart is empty</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
