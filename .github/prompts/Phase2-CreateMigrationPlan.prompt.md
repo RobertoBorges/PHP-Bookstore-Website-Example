@@ -1,7 +1,7 @@
 ---
 agent: agent
 model: Claude Sonnet 4.5 (copilot)
-tools: ['vscode/openSimpleBrowser', 'vscode/vscodeAPI', 'vscode/extensions', 'execute/testFailure', 'execute/runTask', 'execute/runInTerminal', 'execute/runTests', 'read/problems', 'read/readFile', 'read/terminalSelection', 'read/terminalLastCommand', 'edit/editFiles', 'search', 'web', 'azure-mcp/documentation', 'azure-mcp/search']
+tools: ['search/codebase', 'search/usages', 'vscode/vscodeAPI', 'read/problems', 'search/changes', 'execute/testFailure', 'vscode/runCommand', 'read/terminalLastCommand', 'vscode/openSimpleBrowser', 'web/fetch', 'search/searchResults', 'web/githubRepo', 'vscode/extensions', 'execute/runTests', 'edit/editFiles', 'search', 'azure-mcp/*']
 ---
 
 # Phase 2: Detailed File-by-File Migration Plan
