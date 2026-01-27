@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
@@ -7,6 +8,16 @@ using Bookstore.Web.Services.Interfaces;
 using Bookstore.Web.Services.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure forwarded headers for HTTPS behind proxy/ingress
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | 
+                               ForwardedHeaders.XForwardedProto | 
+                               ForwardedHeaders.XForwardedHost;
+    options.KnownIPNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 // Add Entity Framework Core with SQL Server
 builder.Services.AddDbContext<BookstoreDbContext>(options =>
@@ -32,6 +43,9 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
+// Use forwarded headers middleware (must be before authentication)
+app.UseForwardedHeaders();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -40,7 +54,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection handled by ingress controller, not needed here
+// app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 

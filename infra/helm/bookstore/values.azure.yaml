@@ -2,6 +2,9 @@
 image:
   registry: nonprodborges.azurecr.io
 
+# Development/debugging - single replica
+replicaCount: 1
+
 workloadIdentity:
   clientId: 2fd99848-1c48-4fae-9845-78bf11b2d692
 
@@ -38,10 +41,7 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header X-Forwarded-Proto https;
-      proxy_set_header X-Forwarded-Port 443;
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
   tls:
     enabled: true
     secretName: bookstore-tls-cert
