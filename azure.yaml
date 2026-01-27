@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: bookstore-dotnet
+metadata:
+  template: bookstore-dotnet@0.0.1-beta
+
+services:
+  web:
+    language: csharp
+    project: .
+    host: aks
+    k8s:
+      deployment:
+        name: bookstore-web
+      service:
+        name: bookstore-web-service
+      ingress:
+        name: bookstore-ingress

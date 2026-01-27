@@ -1,0 +1,11 @@
+﻿{{- if .Values.namespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  labels:
+    name: {{ .Values.namespace }}
+    app: bookstore-web
+    environment: {{ .Values.global.environment }}
+    managed-by: helm
+{{- end }}

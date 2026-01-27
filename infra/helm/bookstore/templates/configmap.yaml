@@ -1,0 +1,25 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookstore-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: bookstore-web
+    environment: {{ .Values.global.environment }}
+data:
+  ASPNETCORE_ENVIRONMENT: {{ .Values.config.aspnetcoreEnvironment | quote }}
+  ASPNETCORE_URLS: {{ .Values.config.aspnetcoreUrls | quote }}
+  AZURE_KEY_VAULT_ENDPOINT: {{ .Values.config.azure.keyVaultEndpoint | quote }}
+  AZURE_SQL_SERVER: {{ .Values.config.azure.sqlServer | quote }}
+  AZURE_SQL_DATABASE: {{ .Values.config.azure.sqlDatabase | quote }}
+  APPLICATIONINSIGHTS_CONNECTION_STRING: {{ .Values.config.azure.applicationInsightsConnectionString | quote }}
+  ENABLE_SWAGGER: {{ .Values.config.features.enableSwagger | quote }}
+  ENABLE_HEALTH_CHECKS: {{ .Values.config.features.enableHealthChecks | quote }}
+  {{- if .Values.config.azureAd }}
+  AzureAd__Instance: {{ .Values.config.azureAd.instance | quote }}
+  AzureAd__Domain: {{ .Values.config.azureAd.domain | quote }}
+  AzureAd__TenantId: {{ .Values.config.azureAd.tenantId | quote }}
+  AzureAd__ClientId: {{ .Values.config.azureAd.clientId | quote }}
+  AzureAd__CallbackPath: {{ .Values.config.azureAd.callbackPath | quote }}
+  AzureAd__SignedOutCallbackPath: {{ .Values.config.azureAd.signedOutCallbackPath | quote }}
+  {{- end }}

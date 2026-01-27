@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "dev"
+    },
+    "location": {
+      "value": "canadacentral"
+    },
+    "resourceBaseName": {
+      "value": "bookstore"
+    },
+    "existingSqlServerId": {
+      "value": "/subscriptions/3464f809-852d-45e3-846c-f5411419cc83/resourceGroups/infraborges-rg/providers/Microsoft.Sql/servers/sqldemononprodsvr"
+    },
+    "sqlDatabaseName": {
+      "value": "BookstoreDB"
+    },
+    "existingKeyVaultId": {
+      "value": "/subscriptions/3464f809-852d-45e3-846c-f5411419cc83/resourceGroups/infraborges-rg/providers/Microsoft.KeyVault/vaults/nonprodborgeskv"
+    },
+    "existingAcrId": {
+      "value": "/subscriptions/3464f809-852d-45e3-846c-f5411419cc83/resourceGroups/infraborges-rg/providers/Microsoft.ContainerRegistry/registries/nonprodborges"
+    },
+    "existingStorageAccountId": {
+      "value": "/subscriptions/3464f809-852d-45e3-846c-f5411419cc83/resourceGroups/infraborges-rg/providers/Microsoft.Storage/storageAccounts/infraborgesrg9c39"
+    },
+    "aadClientId": {
+      "value": "6e324321-4459-4ab4-8b4c-226c13961200"
+    },
+    "enableMonitoring": {
+      "value": true
+    },
+    "enableNetworkPolicy": {
+      "value": true
+    },
+    "kubernetesVersion": {
+      "value": "1.33.5"
+    }
+  }
+}

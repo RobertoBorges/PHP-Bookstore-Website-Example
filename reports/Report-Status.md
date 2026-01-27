@@ -15,7 +15,7 @@ graph LR
     P0[Phase 0<br/>Discovery<br/>✅ 100%] --> P1[Phase 1<br/>Assessment<br/>✅ 100%]
     P1 --> P2[Phase 2<br/>Planning<br/>✅ 100%]
     P2 --> P3[Phase 3<br/>Migration<br/>✅ 100%]
-    P3 --> P4[Phase 4<br/>Infrastructure<br/>⏳ 0%]
+    P3 --> P4[Phase 4<br/>Infrastructure<br/>✅ 100%]
     P4 --> P5[Phase 5<br/>Deployment<br/>⏳ 0%]
     P5 --> P6[Phase 6<br/>CI/CD<br/>⏳ 0%]
     
@@ -23,7 +23,7 @@ graph LR
     style P1 fill:#4CAF50,color:#fff
     style P2 fill:#4CAF50,color:#fff
     style P3 fill:#4CAF50,color:#fff
-    style P4 fill:#9E9E9E
+    style P4 fill:#4CAF50,color:#fff
     style P5 fill:#9E9E9E
     style P6 fill:#9E9E9E
 ```
@@ -34,10 +34,126 @@ graph LR
 | **Phase 1: Technical Assessment** | ✅ Complete | 100% | Completed |
 | **Phase 2: Migration Planning** | ✅ Complete | 100% | Completed |
 | **Phase 3: Code Migration** | ✅ Complete | 100% | ✅ All waves complete + tested |
-| **Phase 4: Infrastructure Generation** | ⏳ Not Started | 0% | ~45 hours |
+| **Phase 4: Infrastructure Generation** | ✅ Complete | 100% | ✅ All 25 tasks complete |
 | **Phase 5: Azure Deployment** | ⏳ Not Started | 0% | ~20 hours |
 | **Phase 6: CI/CD Setup** | ⏳ Not Started | 0% | ~10 hours |
 | **Testing & Refinement** | ⏳ In Progress | 30% | Functional testing ongoing |
+
+---
+
+## Phase 4 Summary - Infrastructure Generation ⏳ (In Progress)
+
+**Started**: January 27, 2026  
+**Target Region**: Canada Central  
+**Deployment Platform**: Azure Kubernetes Service (AKS)  
+**Status**: ✅ Helm chart conversion complete - Using production-grade Helm charts instead of raw YAML
+
+### Key Decision: Helm Chart Architecture ⭐
+
+**Decision Made**: January 27, 2026  
+**Rationale**: Converted from plain Kubernetes YAML files to Helm charts for better manageability and resilience
+
+**Why Helm Charts?**
+- ✅ **Environment Management**: Separate values files for dev/prod with different resource allocations
+- ✅ **Templating Power**: Dynamic configuration based on Azure resource outputs from Bicep
+- ✅ **Version Control**: Helm chart versioning (v1.0.0) with rollback capability
+- ✅ **Best Practice**: Industry standard for AKS deployments, works seamlessly with `azd`
+- ✅ **Maintainability**: Single source of truth with parameterized values
+- ✅ **Production Ready**: Built-in support for multiple environments and feature flags
+
+**Helm Chart Structure Created**:
+```
+infra/helm/bookstore/
+├── Chart.yaml                    # Chart metadata (v1.0.0)
+├── values.yaml                   # Default values (production baseline)
+├── values.dev.yaml              # Development overrides (1 replica, lower resources)
+├── values.prod.yaml             # Production overrides (5 replicas, rate limiting)
+├── README.md                    # Comprehensive Helm documentation
+└── templates/
+    ├── _helpers.tpl            # Helm template helpers
+    ├── namespace.yaml          # Namespace template
+    ├── serviceaccount.yaml     # Service account with workload identity
+    ├── deployment.yaml         # Application deployment (parameterized)
+    ├── service.yaml            # ClusterIP service
+    ├── ingress.yaml            # NGINX ingress with TLS
+    ├── configmap.yaml          # Non-sensitive configuration
+    └── secret.yaml             # Key Vault CSI Driver integration
+```
+
+**Configuration Highlights**:
+- **Development**: 1 replica, 128Mi-256Mi RAM, Swagger enabled, HTTP only
+- **Production**: 5 replicas, 512Mi-1Gi RAM, rate limiting, TLS enforced
+- **Security**: Key Vault CSI Driver for secret management, workload identity enabled
+- **Observability**: Application Insights integration, health checks configured
+
+### Infrastructure Task Breakdown
+
+#### Task Group 1: Foundation Files ✅ (3/3 Complete)
+- ✅ Task 1.1: Create azure.yaml for Azure Developer CLI
+- ✅ Task 1.2: Create Dockerfile for .NET 10 application
+- ✅ Task 1.3: Create .dockerignore file
+
+#### Task Group 2: Bicep Modules ✅ (6/6 Complete)
+- ✅ Task 2.1: Create identity.bicep (Managed Identity)
+- ✅ Task 2.2: Create networking.bicep (VNet, Subnets)
+- ✅ Task 2.3: Create monitoring.bicep (Log Analytics, App Insights)
+- ✅ Task 2.4: Create aks.bicep (AKS Cluster)
+- ✅ Task 2.5: Create database.bicep (SQL Database)
+- ✅ Task 2.6: Create rbac.bicep (Role Assignments)
+
+#### Task Group 3: Kubernetes Manifests ✅ (6/6 Complete) → **CONVERTED TO HELM CHART**
+
+**Original Approach**: Plain YAML files in `infra/kubernetes/`
+**New Approach**: Production-grade Helm chart in `infra/helm/bookstore/`
+**Conversion Date**: January 27, 2026
+
+- ✅ Task 3.1: ~~Create namespace.yaml~~ → **Helm template with environment labels**
+- ✅ Task 3.2: ~~Create deployment.yaml~~ → **Parameterized deployment template**
+- ✅ Task 3.3: ~~Create service.yaml~~ → **Helm service template**
+- ✅ Task 3.4: ~~Create ingress.yaml~~ → **Conditional ingress with TLS support**
+- ✅ Task 3.5: ~~Create configmap.yaml~~ → **Dynamic configmap from values**
+- ✅ Task 3.6: ~~Create secret.yaml~~ → **Key Vault CSI Driver integration**
+
+**Additional Files Created for Helm**:
+- ✅ Chart.yaml - Chart metadata and versioning (v1.0.0)
+- ✅ values.yaml - Production baseline configuration
+- ✅ values.dev.yaml - Development environment overrides
+- ✅ values.prod.yaml - Production environment overrides  
+- ✅ serviceaccount.yaml - Workload identity service account
+- ✅ _helpers.tpl - Helm template helper functions
+- ✅ README.md - Comprehensive Helm documentation
+
+**Benefits of Helm Conversion**:
+1. **Multi-Environment Support**: Single chart, multiple configurations (dev/staging/prod)
+2. **Parameterization**: All Azure resource IDs from Bicep outputs as values
+3. **Rollback Capability**: `helm rollback` for instant recovery
+4. **Version Control**: Chart versioning separate from app versioning
+5. **Best Practices**: Industry-standard AKS deployment pattern
+6. **azd Integration**: Works seamlessly with Azure Developer CLI
+
+#### Task Group 4: Deployment Scripts ✅ (3/3 Complete)
+
+- ✅ Task 4.1: Create validate.ps1 (Pre-deployment validation)
+- ✅ Task 4.2: Create deploy.ps1 (Deployment automation with Helm)
+- ✅ Task 4.3: Create README.md (Infrastructure documentation)
+
+**Scripts Created**:
+- **validate.ps1** (195 lines) - Validates Azure CLI, kubectl, Helm, Docker, Azure login, Bicep templates, Helm chart, parameters file
+- **deploy.ps1** (235 lines) - Automated 6-step deployment: validation → resource group → Bicep → Docker build/push → kubectl config → Helm install/upgrade
+- **README.md** (320 lines) - Comprehensive documentation with quick start, troubleshooting, monitoring, upgrade/rollback procedures
+
+### Current Task
+
+**Completed**: Task Group 4 - Deployment Scripts ✅  
+**Next**: Phase 5 - Azure Deployment
+
+### Progress Tracking
+
+- **Total Tasks**: 25 (18 original + 7 Helm additions)
+- **Completed**: 25
+- **In Progress**: 0
+- **Remaining**: 0
+- **Phase 4 Progress**: 100% ✅ COMPLETE
 
 ---
 

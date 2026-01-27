@@ -1,0 +1,131 @@
+﻿# Default values for bookstore Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+global:
+  environment: production
+
+# Namespace
+namespace: bookstore
+
+# Application image configuration
+image:
+  registry: <YOUR-ACR-NAME>.azurecr.io  # From Bicep output
+  repository: bookstore-web
+  tag: latest
+  pullPolicy: Always
+
+# Replica configuration
+replicaCount: 3
+
+# Resource limits and requests
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+# Health check configuration
+healthCheck:
+  enabled: true
+  livenessProbe:
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    path: /health
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+  name: bookstore-web-service
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  host: bookstore.yourdomain.com  # REPLACE WITH YOUR DOMAIN
+  tls:
+    enabled: true
+    secretName: bookstore-tls-cert
+
+# Azure Workload Identity
+workloadIdentity:
+  enabled: true
+  clientId: <MANAGED-IDENTITY-CLIENT-ID>  # From Bicep output
+  serviceAccountName: bookstore-sa
+
+# Application configuration (non-sensitive)
+config:
+  aspnetcoreEnvironment: Production
+  aspnetcoreUrls: "http://+:8080"
+  
+  # Azure resources (from Bicep outputs)
+  azure:
+    keyVaultEndpoint: <YOUR-KEY-VAULT-ENDPOINT>
+    sqlServer: <YOUR-SQL-SERVER-FQDN>
+    sqlDatabase: bookstore-db
+    applicationInsightsConnectionString: <YOUR-APP-INSIGHTS-CONNECTION-STRING>
+  
+  # Feature flags
+  features:
+    enableSwagger: false
+    enableHealthChecks: true
+
+# Secret management strategy
+secrets:
+  # Strategy: keyvault-csi (recommended) or kubernetes-secret
+  strategy: keyvault-csi
+  
+  # Azure Key Vault CSI Driver configuration
+  keyVault:
+    name: <YOUR-KEY-VAULT-NAME>
+    tenantId: <YOUR-TENANT-ID>
+    objects:
+      - objectName: sql-connection-string
+        objectType: secret
+        key: ConnectionStrings__DefaultConnection
+      - objectName: session-secret-key
+        objectType: secret
+        key: SESSION_SECRET_KEY
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+# Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity rules
+affinity: {}

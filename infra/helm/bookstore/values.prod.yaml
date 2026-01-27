@@ -1,0 +1,31 @@
+﻿# Production environment values
+# Override default values for production
+
+global:
+  environment: production
+
+replicaCount: 5
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+config:
+  aspnetcoreEnvironment: Production
+  features:
+    enableSwagger: false
+    enableHealthChecks: true
+
+ingress:
+  host: bookstore.yourdomain.com
+  tls:
+    enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"

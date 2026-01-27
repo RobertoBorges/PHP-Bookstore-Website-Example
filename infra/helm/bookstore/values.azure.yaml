@@ -1,0 +1,47 @@
+# Azure-specific values
+image:
+  registry: nonprodborges.azurecr.io
+
+workloadIdentity:
+  clientId: 2fd99848-1c48-4fae-9845-78bf11b2d692
+
+config:
+  azure:
+    keyVaultEndpoint: https://nonprodborgeskv.vault.azure.net/
+    sqlServer: sqldemononprodsvr.database.windows.net
+    sqlDatabase: BookstoreDB
+    applicationInsightsConnectionString: InstrumentationKey=8d0a3f32-6395-4208-8707-a9726fa3c050;IngestionEndpoint=https://canadacentral-1.in.applicationinsights.azure.com/;LiveEndpoint=https://canadacentral.livediagnostics.monitor.azure.com/;ApplicationId=dc88b0cb-fd36-4760-a757-afa5dd1865a0
+  azureAd:
+    instance: https://login.microsoftonline.com/
+    domain: MngEnvMCAP008355.onmicrosoft.com
+    tenantId: 7bf7ca02-20a6-4cc7-a35d-8fa9c5fd4529
+    clientId: 6e324321-4459-4ab4-8b4c-226c13961200
+    callbackPath: /signin-oidc
+    signedOutCallbackPath: /signout-oidc
+
+secrets:
+  strategy: keyvault-csi
+  keyVault:
+    name: nonprodborgeskv
+    tenantId: 7bf7ca02-20a6-4cc7-a35d-8fa9c5fd4529
+    objects:
+      - objectName: ConnectionStrings--DefaultConnection
+        objectType: secret
+        key: ConnectionStrings__DefaultConnection
+      - objectName: ApplicationInsights--ConnectionString
+        objectType: secret
+        key: ApplicationInsights__ConnectionString
+
+ingress:
+  host: bookstore.nonprodborges.com
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      proxy_set_header X-Forwarded-Proto https;
+      proxy_set_header X-Forwarded-Port 443;
+  tls:
+    enabled: true
+    secretName: bookstore-tls-cert

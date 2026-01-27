@@ -1,0 +1,26 @@
+﻿# Development environment values
+# Override default values for dev environment
+
+global:
+  environment: development
+
+replicaCount: 1
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+config:
+  aspnetcoreEnvironment: Development
+  features:
+    enableSwagger: true
+    enableHealthChecks: true
+
+ingress:
+  host: bookstore-dev.yourdomain.com
+  tls:
+    enabled: false  # Use HTTP for dev
