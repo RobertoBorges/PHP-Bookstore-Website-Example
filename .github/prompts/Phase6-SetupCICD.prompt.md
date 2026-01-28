@@ -3,9 +3,19 @@ agent: agent
 model: Claude Sonnet 4.5 (copilot)
 tools: ['search/codebase', 'search/usages', 'vscode/vscodeAPI', 'read/problems', 'search/changes', 'execute/testFailure', 'vscode/runCommand', 'read/terminalLastCommand', 'vscode/openSimpleBrowser', 'web/fetch', 'search/searchResults', 'web/githubRepo', 'vscode/extensions', 'execute/runTests', 'edit/editFiles', 'search', 'azure-mcp/*']
 ---
-Set up CI/CD pipelines for automated deployment and continuous integration
 
-# Rules for CI/CD Pipeline Setup
+# Phase 6: Set Up CI/CD Pipelines
+
+## Objective
+
+Set up CI/CD pipelines for automated deployment and continuous integration of the migrated .NET 10 application.
+
+**Prerequisites**:
+- Phase 5: Application successfully deployed to Azure
+
+---
+
+## Step 1: Pipeline Platform Selection
 - Use `azure_config_deploymentpipeline` to generate deployment pipeline configurations.
 - Use `file_search` to locate existing pipeline files and understand current CI/CD setup.
 - Use `semantic_search` to identify deployment requirements from the application structure.
@@ -106,3 +116,45 @@ Set up CI/CD pipelines for automated deployment and continuous integration
 - Make the CI/CD report human-readable and in markdown format with clear sections and actionable guidance.
 - Suggest that the migration and modernization process is now complete! Mention /getstatus to review the final status and next steps for ongoing maintenance and optimization.
 - At the end, update the status report file reports/Report-Status.md with the status of the CI/CD step and mark the overall migration process as successfully completed.
+
+---
+
+## Step 5: Update Status Report
+
+Update `reports/Report-Status.md`:
+
+```markdown
+## Phase 6 Summary
+
+- **CI/CD Status**: Complete
+- **Pipeline Platform**: [GitHub Actions/Azure DevOps]
+- **Pipelines Created**: ✅ CI + CD
+
+## Overall Migration Status: ✅ COMPLETE
+
+All phases of the PHP to .NET 10 migration have been successfully completed!
+
+| Phase | Status |
+|-------|--------|
+| Phase 0: Application Discovery | ✅ Complete |
+| Phase 1: Technical Assessment | ✅ Complete |
+| Phase 2: Migration Planning | ✅ Complete |
+| Phase 3: Code Migration | ✅ Complete |
+| Phase 4: Infrastructure | ✅ Complete |
+| Phase 5: Deployment | ✅ Complete |
+| Phase 6: CI/CD Setup | ✅ Complete |
+```
+
+---
+
+## Deliverables
+
+At the end of Phase 6:
+
+1. ✅ CI/CD pipelines configured
+2. ✅ Pipeline configuration files created
+3. ✅ `reports/cicd_setup_report.md` generated
+4. ✅ `reports/Report-Status.md` updated
+5. ✅ Migration process complete!
+
+**Next Step**: Run `/getstatus` to review the final status and recommendations for ongoing maintenance.

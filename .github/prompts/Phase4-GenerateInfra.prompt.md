@@ -3,7 +3,35 @@ agent: agent
 model: Claude Sonnet 4.5 (copilot)
 tools: ['search/codebase', 'search/usages', 'vscode/vscodeAPI', 'read/problems', 'search/changes', 'execute/testFailure', 'vscode/runCommand', 'read/terminalLastCommand', 'vscode/openSimpleBrowser', 'web/fetch', 'search/searchResults', 'web/githubRepo', 'vscode/extensions', 'execute/runTests', 'edit/editFiles', 'search', 'azure-mcp/*']
 ---
-Generate Infrastructure as Code Files for Azure Deployment
+
+# Phase 4: Generate Infrastructure as Code for Azure Deployment
+
+## Objective
+
+Generate Infrastructure as Code (IaC) files for deploying the migrated .NET 10 application to Azure using the hosting platform selected in Phase 1.
+
+**Prerequisites**:
+- Phase 3: Code migration completed with working .NET 10 application
+
+---
+
+## Step 1: Review Migration Configuration
+
+Read the technical assessment to understand the target infrastructure:
+
+```
+read_file: reports/Technical-Assessment-Report.md
+```
+
+Confirm:
+- [ ] Azure hosting platform (App Service / Container Apps / AKS)
+- [ ] IaC tool preference (Bicep / Terraform)
+- [ ] Database service
+- [ ] Authentication approach
+
+---
+
+## Step 2: Generate Infrastructure
 
 Use `azure_development-summarize_topic` tool to get high-level instructions to follow.
 
@@ -97,3 +125,43 @@ Based on the chosen Azure hosting platform in the assessment report (App Service
 - Set up database resources if applicable (Azure SQL, Cosmos DB, etc.).
 - Include proper tagging and naming conventions.
 - Prefer Managed Identity and OIDC federated credentials; avoid storing secrets in state or code.
+
+---
+
+## Step 3: Validate Infrastructure
+
+Use `azure_check_predeploy` to validate the generated infrastructure files.
+
+---
+
+## Step 4: Update Status Report
+
+Update `reports/Report-Status.md`:
+
+```markdown
+## Phase 4 Summary
+
+- **Infrastructure Status**: Complete
+- **IaC Tool**: [Bicep/Terraform]
+- **Target Platform**: [App Service/Container Apps/AKS]
+- **Validation Status**: ✅ Passed
+
+## Next Step
+
+Run `/phase5-deploytoazure` to deploy the application to Azure.
+```
+
+---
+
+## Deliverables
+
+At the end of Phase 4:
+
+1. ✅ `infra/` directory with all IaC files
+2. ✅ `azure.yaml` for Azure Developer CLI
+3. ✅ Managed identity configurations
+4. ✅ Monitoring and security setup
+5. ✅ Infrastructure validated
+6. ✅ `reports/Report-Status.md` updated
+
+**Next Step**: `/phase5-deploytoazure` to deploy to Azure.
