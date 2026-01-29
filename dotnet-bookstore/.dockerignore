@@ -1,0 +1,28 @@
+﻿# Git
+.git
+.gitignore
+
+# IDE
+.vs
+.vscode
+*.suo
+*.user
+
+# Build outputs
+**/bin
+**/obj
+**/out
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# Infrastructure
+infra/
+k8s/
+
+# Reports
+reports/
+
+# Documentation
+*.md

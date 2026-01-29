@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/BookstoreApp.Data/BookstoreApp.Data.csproj" />
+    <Project Path="src/BookstoreApp.Web/BookstoreApp.Web.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,93 @@
+﻿@model BookCatalogViewModel
+@{
+    ViewData["Title"] = "Book Catalog";
+}
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1><i class="bi bi-book"></i> Book Catalog</h1>
+    </div>
+    <div class="col-md-4 text-end">
+        <span class="badge bg-info fs-6">@Model.Books.Count() book(s) found</span>
+    </div>
+</div>
+
+<!-- Search and Filter -->
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" name="searchTerm" class="form-control" placeholder="Search by title, author, or ISBN..." value="@Model.SearchTerm" />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <select name="category" class="form-select" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                @foreach (var cat in Model.Categories)
+                {
+                    <option value="@cat" selected="@(Model.Category == cat)">@cat</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2">
+            @if (!string.IsNullOrEmpty(Model.SearchTerm) || !string.IsNullOrEmpty(Model.Category))
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary w-100">Clear Filters</a>
+            }
+        </div>
+    </div>
+</form>
+
+<!-- Book Grid -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    @foreach (var book in Model.Books)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <img src="@(book.ImageUrl ?? "/images/no-cover.png")" class="card-img-top" alt="@book.BookTitle" style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@book.BookTitle</h5>
+                    <p class="card-text text-muted">by @book.Author</p>
+                    <p class="card-text"><small class="text-muted">@book.Category</small></p>
+                    <p class="card-text fw-bold text-primary fs-5">$@book.Price.ToString("F2")</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <form asp-controller="Cart" asp-action="Add" method="post">
+                        <input type="hidden" name="bookId" value="@book.BookId" />
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-cart-plus"></i> Add to Cart
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Books.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <i class="bi bi-search fs-1"></i>
+        <h4 class="mt-3">No books found</h4>
+        <p>Try adjusting your search or filter criteria.</p>
+    </div>
+}
+
+<!-- Pagination -->
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-searchTerm="@Model.SearchTerm" asp-route-category="@Model.Category">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

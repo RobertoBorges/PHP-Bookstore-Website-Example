@@ -1,0 +1,99 @@
+﻿name: Build and Deploy Bookstore
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "9.0.x"
+  ACR_NAME: ${{ secrets.ACR_NAME }}
+  AKS_CLUSTER: ${{ secrets.AKS_CLUSTER }}
+  AKS_RESOURCE_GROUP: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish src/BookstoreApp.Web/BookstoreApp.Web.csproj -c Release -o ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: bookstore-app
+        path: ./publish
+
+  build-docker:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == ''push'' && github.ref == ''refs/heads/main''
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to ACR
+      run: az acr login --name ${{ env.ACR_NAME }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t ${{ env.ACR_NAME }}.azurecr.io/bookstore-web:${{ github.sha }} .
+        docker tag ${{ env.ACR_NAME }}.azurecr.io/bookstore-web:${{ github.sha }} ${{ env.ACR_NAME }}.azurecr.io/bookstore-web:latest
+        docker push ${{ env.ACR_NAME }}.azurecr.io/bookstore-web:${{ github.sha }}
+        docker push ${{ env.ACR_NAME }}.azurecr.io/bookstore-web:latest
+
+  deploy:
+    needs: build-docker
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Get AKS credentials
+      run: |
+        az aks get-credentials --resource-group ${{ env.AKS_RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER }}
+
+    - name: Deploy to AKS
+      run: |
+        sed -i "s|\${ACR_NAME}|${{ env.ACR_NAME }}|g" k8s/deployment.yaml
+        kubectl apply -f k8s/deployment.yaml
+        kubectl apply -f k8s/service.yaml
+        kubectl apply -f k8s/ingress.yaml
+
+    - name: Verify deployment
+      run: |
+        kubectl rollout status deployment/bookstore-web
+        kubectl get pods -l app=bookstore

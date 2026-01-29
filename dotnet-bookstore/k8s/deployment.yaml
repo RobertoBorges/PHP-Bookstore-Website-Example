@@ -1,0 +1,73 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookstore-web
+  labels:
+    app: bookstore
+    component: web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bookstore
+      component: web
+  template:
+    metadata:
+      labels:
+        app: bookstore
+        component: web
+    spec:
+      containers:
+      - name: bookstore-web
+        image: ${ACR_NAME}.azurecr.io/bookstore-web:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__BookstoreDb
+          valueFrom:
+            secretKeyRef:
+              name: bookstore-secrets
+              key: connection-string
+        - name: AzureAd__TenantId
+          valueFrom:
+            secretKeyRef:
+              name: bookstore-secrets
+              key: tenant-id
+        - name: AzureAd__ClientId
+          valueFrom:
+            secretKeyRef:
+              name: bookstore-secrets
+              key: client-id
+        - name: AzureAd__ClientSecret
+          valueFrom:
+            secretKeyRef:
+              name: bookstore-secrets
+              key: client-secret
+        - name: ApplicationInsights__ConnectionString
+          valueFrom:
+            secretKeyRef:
+              name: bookstore-secrets
+              key: appinsights-connection-string
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      imagePullSecrets:
+      - name: acr-secret

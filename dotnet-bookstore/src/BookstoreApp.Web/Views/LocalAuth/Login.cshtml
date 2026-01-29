@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Local Development Login";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Development Login
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Note:</strong> This is a simplified login for local development only.
+                    In production, authentication is handled by Microsoft Entra ID.
+                </div>
+                
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form method="post" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl">
+                    @Html.AntiForgeryToken()
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Your Name</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               placeholder="Enter your name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="Enter your email" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-box-arrow-in-right"></i> Sign In (Development)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

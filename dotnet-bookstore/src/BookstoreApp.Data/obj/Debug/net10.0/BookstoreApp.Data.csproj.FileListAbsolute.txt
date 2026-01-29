@@ -1,0 +1,15 @@
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\bin\Debug\net10.0\BookstoreApp.Data.deps.json
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\bin\Debug\net10.0\BookstoreApp.Data.runtimeconfig.json
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\bin\Debug\net10.0\BookstoreApp.Data.dll
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\bin\Debug\net10.0\BookstoreApp.Data.pdb
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.csproj.AssemblyReference.cache
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.AssemblyInfoInputs.cache
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.AssemblyInfo.cs
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.csproj.CoreCompileInputs.cache
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.sourcelink.json
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.dll
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\refint\BookstoreApp.Data.dll
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.pdb
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\BookstoreApp.Data.genruntimeconfig.cache
+C:\git\PHP-Bookstore-Website-Example\dotnet-bookstore\src\BookstoreApp.Data\obj\Debug\net10.0\ref\BookstoreApp.Data.dll
