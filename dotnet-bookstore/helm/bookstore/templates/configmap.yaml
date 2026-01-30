@@ -1,0 +1,14 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  ASPNETCORE_ENVIRONMENT: "Production"
+  ASPNETCORE_URLS: "http://+:{{ .Values.service.targetPort }}"
+  AzureAd__Instance: {{ .Values.config.azureAd.instance | quote }}
+  AzureAd__Domain: {{ .Values.config.azureAd.domain | quote }}
+  AzureAd__TenantId: {{ .Values.config.azureAd.tenantId | quote }}
+  AzureAd__ClientId: {{ .Values.config.azureAd.clientId | quote }}
+  AzureAd__CallbackPath: {{ .Values.config.azureAd.callbackPath | quote }}

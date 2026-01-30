@@ -1,0 +1,22 @@
+# Azure Developer CLI (azd) Configuration
+# Run: azd up
+
+name: bookstore
+metadata:
+  template: dotnet-bookstore@1.0.0
+
+# Infrastructure configuration
+infra:
+  provider: bicep
+  path: infra
+  module: main
+
+# Services to deploy
+services:
+  web:
+    project: ./src/BookstoreApp.Web
+    host: containerapp
+    language: dotnet
+    docker:
+      path: ./Dockerfile
+      context: .

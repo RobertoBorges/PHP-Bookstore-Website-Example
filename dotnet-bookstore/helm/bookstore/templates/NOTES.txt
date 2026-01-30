@@ -1,0 +1,40 @@
+﻿=======================================================================
+  Bookstore .NET 10 Application - Deployed Successfully!
+=======================================================================
+
+Application URL:
+{{- if .Values.ingress.enabled }}
+  https://{{ .Values.ingress.host }}
+{{- else }}
+  kubectl port-forward svc/{{ .Release.Name }} 8080:{{ .Values.service.port }}
+  Then visit: http://localhost:8080
+{{- end }}
+
+TLS Certificate:
+{{- if and .Values.ingress.enabled .Values.ingress.tls.enabled }}
+  Managed by cert-manager with Let'\''s Encrypt
+  ClusterIssuer: {{ index .Values.ingress.annotations "cert-manager.io/cluster-issuer" }}
+  Secret: {{ .Values.ingress.tls.secretName }}
+{{- else }}
+  TLS is not enabled
+{{- end }}
+
+Useful Commands:
+  # Check pod status
+  kubectl get pods -l app={{ .Release.Name }} -n {{ .Release.Namespace }}
+
+  # View logs
+  kubectl logs -l app={{ .Release.Name }} -n {{ .Release.Namespace }} -f
+
+  # Check certificate status
+  kubectl get certificate -n {{ .Release.Namespace }}
+
+  # Describe ingress
+  kubectl describe ingress {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+Configuration:
+  - Replicas: {{ .Values.replicaCount }} (autoscaling: {{ .Values.autoscaling.enabled }})
+  - Image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+  - Service Port: {{ .Values.service.port }}
+
+=======================================================================

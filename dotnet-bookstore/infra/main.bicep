@@ -1,124 +1,101 @@
-﻿// Main Bicep template for Bookstore .NET Application
-// Target: Azure Kubernetes Service with Azure SQL Database
+// Azure Developer CLI (azd) Compatible Template
+// Deploys: AKS + Monitoring
+// Uses EXISTING: ACR, SQL Server, Key Vault
 
-targetScope = ''resourceGroup''
+targetScope = 'resourceGroup'
 
-@description(''Location for all resources'')
+// ============================================================================
+// PARAMETERS (azd provides these automatically)
+// ============================================================================
+
+@description('Location for all resources')
 param location string = resourceGroup().location
 
-@description(''Base name for resources'')
-param baseName string = ''bookstore''
+@description('Environment name (from azd)')
+param environmentName string
 
-@description(''Environment name (dev, staging, prod)'')
-@allowed([''dev'', ''staging'', ''prod''])
-param environment string = ''dev''
+@description('Principal ID for role assignments')
+param principalId string = ''
 
-@description(''SQL Server administrator login'')
-param sqlAdminLogin string = ''sqladmin''
+// AKS Configuration
+@description('AKS node count')
+@minValue(1)
+@maxValue(10)
+param aksNodeCount int = 2
 
+@description('AKS node VM size')
+param aksNodeVmSize string = 'Standard_D2s_v3'
+
+@description('Kubernetes version')
+param kubernetesVersion string = '1.29'
+
+// Existing Resources - You must provide these
+@description('Resource ID of your existing Azure Container Registry')
+param existingAcrResourceId string
+
+@description('Name of your existing ACR (for login server)')
+param existingAcrName string
+
+@description('Connection string for existing SQL Database')
 @secure()
-@description(''SQL Server administrator password'')
-param sqlAdminPassword string
+param sqlConnectionString string
 
-@description(''Application Insights instrumentation key'')
-param appInsightsConnectionString string = ''''
+@description('Your domain for ingress (e.g., bookstore.yourdomain.com)')
+param ingressHost string = ''
 
-// Resource naming
-var resourcePrefix = ''${baseName}-${environment}''
-var sqlServerName = ''${resourcePrefix}-sql''
-var sqlDatabaseName = ''BookstoreDb''
-var acrName = replace(''${baseName}${environment}acr'', ''-'', '''')
-var appInsightsName = ''${resourcePrefix}-insights''
-var keyVaultName = ''${resourcePrefix}-kv''
+// ============================================================================
+// VARIABLES
+// ============================================================================
 
-// Azure Container Registry
-resource acr ''Microsoft.ContainerRegistry/registries@2023-07-01'' = {
-  name: acrName
-  location: location
-  sku: {
-    name: ''Standard''
-  }
-  properties: {
-    adminUserEnabled: false
-  }
-}
+var resourceToken = toLower(uniqueString(resourceGroup().id, environmentName))
+var aksName = 'aks-${resourceToken}'
+var logAnalyticsName = 'log-${resourceToken}'
+var appInsightsName = 'ai-${resourceToken}'
 
-// Azure SQL Server
-resource sqlServer ''Microsoft.Sql/servers@2023-05-01-preview'' = {
-  name: sqlServerName
-  location: location
-  properties: {
-    administratorLogin: sqlAdminLogin
-    administratorLoginPassword: sqlAdminPassword
-    minimalTlsVersion: ''1.2''
-    publicNetworkAccess: ''Enabled''
+// ============================================================================
+// MODULES
+// ============================================================================
+
+// Monitoring
+module monitoring 'modules/monitoring.bicep' = {
+  name: 'monitoring-deployment'
+  params: {
+    location: location
+    logAnalyticsName: logAnalyticsName
+    appInsightsName: appInsightsName
+    retentionInDays: 30
   }
 }
 
-// Azure SQL Database
-resource sqlDatabase ''Microsoft.Sql/servers/databases@2023-05-01-preview'' = {
-  parent: sqlServer
-  name: sqlDatabaseName
-  location: location
-  sku: {
-    name: ''Basic''
-    tier: ''Basic''
-  }
-  properties: {
-    collation: ''SQL_Latin1_General_CP1_CI_AS''
-    maxSizeBytes: 2147483648
-  }
-}
-
-// Allow Azure Services firewall rule
-resource sqlFirewallAzure ''Microsoft.Sql/servers/firewallRules@2023-05-01-preview'' = {
-  parent: sqlServer
-  name: ''AllowAzureServices''
-  properties: {
-    startIpAddress: ''0.0.0.0''
-    endIpAddress: ''0.0.0.0''
+// AKS Cluster
+module aks 'modules/aks.bicep' = {
+  name: 'aks-deployment'
+  params: {
+    location: location
+    aksName: aksName
+    kubernetesVersion: kubernetesVersion
+    nodeVmSize: aksNodeVmSize
+    nodeCount: aksNodeCount
+    acrId: existingAcrResourceId
+    enableMonitoring: true
+    logAnalyticsWorkspaceId: monitoring.outputs.logAnalyticsId
   }
 }
 
-// Application Insights
-resource appInsights ''Microsoft.Insights/components@2020-02-02'' = {
-  name: appInsightsName
-  location: location
-  kind: ''web''
-  properties: {
-    Application_Type: ''web''
-    publicNetworkAccessForIngestion: ''Enabled''
-    publicNetworkAccessForQuery: ''Enabled''
-  }
-}
+// ============================================================================
+// OUTPUTS (required by azd)
+// ============================================================================
 
-// Key Vault for secrets
-resource keyVault ''Microsoft.KeyVault/vaults@2023-07-01'' = {
-  name: keyVaultName
-  location: location
-  properties: {
-    sku: {
-      family: ''A''
-      name: ''standard''
-    }
-    tenantId: subscription().tenantId
-    enableRbacAuthorization: true
-    enableSoftDelete: true
-    softDeleteRetentionInDays: 90
-  }
-}
+output AZURE_LOCATION string = location
+output AZURE_AKS_NAME string = aks.outputs.aksName
+output AZURE_AKS_FQDN string = aks.outputs.aksFqdn
+output AZURE_AKS_OIDC_ISSUER string = aks.outputs.aksOidcIssuerUrl
+output AZURE_AKS_KUBELET_IDENTITY string = aks.outputs.kubeletIdentityObjectId
 
-// Store SQL connection string in Key Vault
-resource sqlConnectionStringSecret ''Microsoft.KeyVault/vaults/secrets@2023-07-01'' = {
-  parent: keyVault
-  name: ''SqlConnectionString''
-  properties: {
-    value: ''Server=tcp:${sqlServer.properties.fullyQualifiedDomainName},1433;Initial Catalog=${sqlDatabaseName};Authentication=Active Directory Default;Encrypt=True;TrustServerCertificate=False;''
-  }
-}
+output AZURE_CONTAINER_REGISTRY_NAME string = existingAcrName
+output AZURE_CONTAINER_REGISTRY_ENDPOINT string = '${existingAcrName}.azurecr.io'
 
-// Outputs
-output acrLoginServer string = acr.properties.loginServer
-output sqlServerFqdn string = sqlServer.properties.fullyQualifiedDomainName
-output appInsightsConnectionString string = appInsights.properties.ConnectionString
-output keyVaultUri string = keyVault.properties.vaultUri
+output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.appInsightsConnectionString
+
+output SQL_CONNECTION_STRING string = sqlConnectionString
+output INGRESS_HOST string = ingressHost

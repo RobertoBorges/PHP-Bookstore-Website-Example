@@ -1,0 +1,98 @@
+﻿# Bookstore Helm Values
+# Override these values for different environments
+
+# Application settings
+replicaCount: 2
+
+image:
+  repository: "" # Set to: <acr-name>.azurecr.io/bookstore
+  tag: "latest"
+  pullPolicy: Always
+
+# Ingress configuration (NGINX Ingress + Let''s Encrypt)
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+  host: bookstore.example.com # Change to your domain
+  tls:
+    enabled: true
+    secretName: bookstore-tls
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+# Container resources
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Health checks
+probes:
+  liveness:
+    path: /health
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    path: /health
+    initialDelaySeconds: 5
+    periodSeconds: 5
+
+# Autoscaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: bookstore
+          topologyKey: kubernetes.io/hostname
+
+# Application configuration
+config:
+  # Azure SQL connection (use Key Vault reference in production)
+  connectionString: ""
+  # Application Insights connection string
+  appInsightsConnectionString: ""
+  # Entra ID settings
+  azureAd:
+    instance: "https://login.microsoftonline.com/"
+    domain: ""
+    tenantId: ""
+    clientId: ""
+    callbackPath: "/signin-oidc"
+
+# External secrets (Azure Key Vault integration)
+externalSecrets:
+  enabled: false
+  keyVaultName: ""
+  secretRefreshInterval: "1h"
